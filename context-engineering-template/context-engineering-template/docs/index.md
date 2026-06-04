@@ -33,6 +33,7 @@ Use this file as the first lookup step. The goal is retrieval-first context, not
 | Intent | Primary docs |
 |---|---|
 | What should I do now? | `docs/memory/current.md`, `docs/tasks/active.md`, `docs/tasks/blocked.md` |
+| Team identity / ownership | `docs/team/members.md`, `docs/tasks/active.md`, `docs/CLAUDE.md` |
 | Planning / solution design | `docs/engineering-principles.md`, `docs/architecture.md`, `docs/security.md`, `docs/conventions.md` |
 | Implementation | `docs/tasks/active.md`, related task plan, `docs/engineering-principles.md`, `docs/architecture.md`, `docs/conventions.md`, targeted code |
 | Bug fix | `docs/testing.md`, `docs/testing-edge-cases.md`, `docs/conventions.md`, active task, related session log |
@@ -51,7 +52,7 @@ Use this file as the first lookup step. The goal is retrieval-first context, not
 | Release / deployment | `docs/release.md`, `docs/testing.md`, `docs/security.md` |
 | Historical question | `docs/tasks/completed.md`, `docs/memory/sessions/*`, `docs/memory/archive/*` |
 | Product scope | `docs/project.md`, `docs/memory/current.md`, roadmap/backlog |
-| Onboarding | `README.md`, `docs/project.md`, `docs/engineering-principles.md`, `docs/index.md` |
+| Onboarding | `README.md`, `docs/project.md`, `docs/team/members.md`, `docs/engineering-principles.md`, `docs/index.md` |
 
 ## Context Budget Example
 
@@ -92,6 +93,7 @@ Use this file as the first lookup step. The goal is retrieval-first context, not
 | `docs/tasks/completed.md` | `task_archive_index` | `archive` | `on_demand` | Completed Task Index |
 | `docs/tasks/task-template.md` | `task_template` | `template` | `on_demand` | TASK.NNN - Task Title |
 | `docs/tasks/ui-task-template.md` | `task_template` | `template` | `on_demand` | UI TASK.NNN - Task Title |
+| `docs/team/members.md` | `team_registry` | `active` | `retrieve_when_planning` | Team Members |
 | `docs/testing-edge-cases.md` | `testing_reference` | `active` | `retrieve_when_debugging` | Testing Edge Cases |
 | `docs/testing.md` | `testing_policy` | `active` | `retrieve_when_debugging` | Testing Strategy |
 | `docs/ui.md` | `ui_spec` | `active` | `retrieve_when_planning` | UI Architecture |
@@ -102,6 +104,10 @@ Use this file as the first lookup step. The goal is retrieval-first context, not
 npm run lint
 npm run security:scan
 npm test
+npm run team:register -- shawn "Shawn"
+npm run team:whoami -- shawn
+npm run team:status
+npm run team:guard
 npm run docs:ready
 npm run docs:new-adr -- "Decision title"
 npm run docs:new-session

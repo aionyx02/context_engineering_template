@@ -14,6 +14,7 @@
 6. `docs/memory/sessions/YYYY-MM-DD.md` 放歷史過程、debug narrative、命令輸出和完成紀錄。
 7. `docs/adr/*` 放會影響架構、資料契約、安全邊界、核心依賴的決策。
 8. `scripts/*` 用來檢查文件 schema、大小、連結、secret、ADR、任務狀態和索引一致性。
+9. `docs/team/members.md` 是假的團隊註冊表，讓多人共用同一份 context 時能標記身份和任務 owner。
 
 ## 快速開始
 
@@ -22,6 +23,7 @@ npm install
 npm run lint
 npm run security:scan
 npm test
+npm run team:status
 npm run docs:refresh
 ```
 
@@ -40,29 +42,34 @@ npm run docs:ready
 1. 複製整個模板到新專案根目錄。
 2. 確認 `.idea/`、`*.iml`、`node_modules/`、`.env*` 不會進入版本控制。
 3. 執行 `npm install`。
-4. 更新 `CLAUDE.md` 的 project overview 和 build / test commands。
-5. 更新 `docs/project.md`，填入產品目標、非目標、技術棧、平台和工程優先級。
-6. 更新 `docs/memory/current.md`，只放目前策略、主要限制和下一步。
-7. 更新 `docs/tasks/active.md`，只放當前 active queue。
-8. 更新 `docs/testing.md`，填入此專案真正會跑的 lint、test、build、security commands。
-9. 更新 `docs/conventions.md` 和 `docs/engineering-principles.md`，確認 coding style、資安優先順序、資源效率和解耦架構規則符合專案。
-10. 視需要更新 `docs/security.md`、`docs/dependencies.md`、`docs/data.md`、`docs/ui.md`、`docs/release.md`。
-11. 如果已有重大架構方向，使用 `npm run docs:new-adr -- "Initial architecture"` 建立第一份 proposed ADR。
-12. 執行 `npm run docs:refresh`。
-13. 替換完所有 `<PLACEHOLDER>` 後，執行 `npm run docs:ready`。
+4. 將每位成員註冊到共享 registry，例如 `npm run team:register -- shawn "Shawn" maintainer`。
+5. 每個人在本機設定自己的身份，例如 `npm run team:whoami -- shawn`。
+6. 更新 `CLAUDE.md` 的 project overview 和 build / test commands。
+7. 更新 `docs/project.md`，填入產品目標、非目標、技術棧、平台和工程優先級。
+8. 更新 `docs/memory/current.md`，只放目前策略、主要限制和下一步。
+9. 更新 `docs/tasks/active.md`，只放當前 active queue，且每個 task 的 `Owner` 必須是 `docs/team/members.md` 裡的成員 ID。
+10. 更新 `docs/testing.md`，填入此專案真正會跑的 lint、test、build、security commands。
+11. 更新 `docs/conventions.md` 和 `docs/engineering-principles.md`，確認 coding style、資安優先順序、資源效率和解耦架構規則符合專案。
+12. 視需要更新 `docs/security.md`、`docs/dependencies.md`、`docs/data.md`、`docs/ui.md`、`docs/release.md`。
+13. 如果已有重大架構方向，使用 `npm run docs:new-adr -- "Initial architecture"` 建立第一份 proposed ADR。
+14. 執行 `npm run team:guard` 和 `npm run docs:refresh`。
+15. 替換完所有 `<PLACEHOLDER>` 後，執行 `npm run docs:ready`。
 
 ## AI 初始化流程
 
 AI agent 接手這份專案時，請照這個順序開始：
 
 1. 讀 `CLAUDE.md`。
-2. 讀 `docs/index.md`。
-3. 讀 `docs/memory/current.md`。
-4. 讀 `docs/tasks/active.md`。
-5. 如果任務涉及規劃、實作、重構、架構、安全或效能，讀 `docs/engineering-principles.md`。
-6. 依照 `docs/index.md` 的 intent routing 讀最小必要文件，例如 `docs/architecture.md`、`docs/security.md`、`docs/testing.md`、`docs/data.md`、`docs/dependencies.md`、ADR 或特定 task 文件。
-7. 不要遞迴讀完整個 `docs/`。
-8. 不要把 session log 或 archive 當成目前指令來源。
+2. 執行 `npm run team:status`，確認目前本機 identity。
+3. 如果沒有 identity，請使用者先執行 `npm run team:whoami -- <member-id>`。
+4. 讀 `docs/team/members.md`。
+5. 讀 `docs/index.md`。
+6. 讀 `docs/memory/current.md`。
+7. 讀 `docs/tasks/active.md`，只處理目前 identity 擁有或使用者明確指派的任務。
+8. 如果任務涉及規劃、實作、重構、架構、安全或效能，讀 `docs/engineering-principles.md`。
+9. 依照 `docs/index.md` 的 intent routing 讀最小必要文件，例如 `docs/architecture.md`、`docs/security.md`、`docs/testing.md`、`docs/data.md`、`docs/dependencies.md`、ADR 或特定 task 文件。
+10. 不要遞迴讀完整個 `docs/`。
+11. 不要把 session log 或 archive 當成目前指令來源。
 
 AI 規劃時必須使用這個優先順序：
 
@@ -74,11 +81,12 @@ AI 規劃時必須使用這個優先順序：
 AI 完成工作前，至少要做：
 
 1. 更新最小必要文件。
-2. 把詳細執行過程放進 `docs/memory/sessions/YYYY-MM-DD.md`。
+2. 把詳細執行過程放進自己的 per-member session log，例如 `docs/memory/sessions/*` 裡的當日成員檔案。
 3. 用 `## COMPLETED: TASK_ID - summary` 標記完成事項。
 4. 如果改到安全邊界、workflow、shell execution、secret handling 或檔案寫入刪除流程，執行 `npm run security:scan`。
-5. 執行 `npm run docs:refresh`。
-6. 回報修改檔案、驗證結果、剩餘風險。
+5. 執行 `npm run team:guard`。
+6. 執行 `npm run docs:refresh`。
+7. 回報修改檔案、驗證結果、剩餘風險。
 
 ## 常用指令
 
@@ -87,6 +95,10 @@ AI 完成工作前，至少要做：
 | `npm run lint` | 檢查 scripts 和 tests 的 JavaScript 語法 |
 | `npm run security:scan` | 掃描 docs、workflow、bootstrap 文件中的高信心 secret pattern |
 | `npm test` | 執行 Node 內建測試 |
+| `npm run team:register -- shawn "Shawn"` | 註冊或更新共享 team member |
+| `npm run team:whoami -- shawn` | 設定本機 session identity，不進 git |
+| `npm run team:status` | 顯示目前身份、成員數量和 active task owner |
+| `npm run team:guard` | 檢查任務 owner 是否為已註冊成員 |
 | `npm run docs:refresh` | 重建文件索引並執行一般 guard checks |
 | `npm run docs:ready` | 真實專案導入完成後的嚴格驗收 |
 | `npm run docs:new-session` | 產生今天的 session log |
@@ -128,6 +140,8 @@ AI 可以建立 `proposed` ADR，但不能自行標記為 `accepted`。只有人
 │   │   ├── backlog.md
 │   │   ├── blocked.md
 │   │   └── completed.md
+│   ├── team/
+│   │   └── members.md
 │   └── state/
 │       ├── tasks-summary.json
 │       └── decision-summary.json
@@ -150,6 +164,8 @@ AI 可以建立 `proposed` ADR，但不能自行標記為 `accepted`。只有人
 - `docs/project.md` 已填入產品、目標、非目標、stack 和平台。
 - `docs/memory/current.md` 已填入目前策略和下一步。
 - `docs/tasks/active.md` 已填入真實 active queue。
+- `docs/team/members.md` 已註冊所有會使用共享 context 的成員。
+- 每位成員都已在本機執行 `npm run team:whoami -- <member-id>`。
 - `docs/testing.md` 已填入真實驗證命令。
 - 需要 UI、資料、依賴或 release 規則時，相關 docs 已填好。
 - 重大架構方向已有 proposed 或 accepted ADR。

@@ -10,6 +10,7 @@
 | Governance | `docs/CLAUDE.md` | 定義文件路由、ADR 權限、同步規則 |
 | Router | `docs/index.md` | 讓 AI 按任務意圖讀最小必要文件 |
 | Engineering policy | `docs/engineering-principles.md` | 定義 Google-style coding、資安優先、效能與解耦原則 |
+| Team registry | `docs/team/members.md` | 記錄 fake member ID，讓 task owner 和 session log 可追蹤 |
 | Stable facts | `docs/project.md` | 放產品背景、目標、平台與工程優先級 |
 | Current state | `docs/memory/current.md` | 放目前策略、約束、下一步 |
 | Task state | `docs/tasks/active.md` | 放 active queue 與任務狀態 |
@@ -23,6 +24,8 @@
 
 ```text
 CLAUDE.md
+  -> team identity check
+  -> docs/team/members.md
   -> docs/index.md
   -> docs/memory/current.md
   -> docs/tasks/active.md
@@ -64,6 +67,7 @@ CI 應該執行：
 npm run lint
 npm run security:scan
 npm test
+npm run team:guard
 npm run docs:refresh
 git diff --exit-code
 ```

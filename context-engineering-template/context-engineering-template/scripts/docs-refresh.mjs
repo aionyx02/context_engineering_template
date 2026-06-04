@@ -7,6 +7,7 @@ const steps = [
   ['docs:guard-schema', process.execPath, ['scripts/docs-guard-schema.mjs']],
   ['docs:guard-links', process.execPath, ['scripts/docs-guard-links.mjs']],
   ['docs:guard-secrets', process.execPath, ['scripts/docs-guard-secrets.mjs']],
+  ['team:guard', process.execPath, ['scripts/team-guard.mjs']],
   ['docs:guard-placeholders', process.execPath, ['scripts/docs-guard-placeholders.mjs']],
   ['docs:guard-adr-status', process.execPath, ['scripts/docs-guard-adr-status.mjs']],
   ['docs:guard-task-status', process.execPath, ['scripts/docs-guard-task-status.mjs']],

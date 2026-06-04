@@ -27,7 +27,9 @@ For planning, implementation, refactor, and architecture work, retrieve `docs/en
 ## 2. Retrieval-First Documentation Rule
 
 - Do not inject all docs into prompt at once.
-- Start from `docs/index.md`, then read `docs/memory/current.md` and `docs/tasks/active.md`.
+- Start by confirming local team identity with `npm run team:status` when scripts are available.
+- If no identity is set, stop task work and ask the human to run `npm run team:whoami -- <member-id>`.
+- Read `docs/team/members.md`, then `docs/index.md`, `docs/memory/current.md`, and `docs/tasks/active.md`.
 - For planning or implementation, also read `docs/engineering-principles.md`.
 - Retrieve additional files only by task intent.
 - Use the smallest relevant heading section.
@@ -70,8 +72,8 @@ After meaningful changes, update the smallest matching document:
 
 - Current strategy, focus, or durable constraint -> `docs/memory/current.md`
 - Open task queue or phase status -> `docs/tasks/active.md`
-- Detailed implementation notes, debugging narrative, command output, or root cause -> `docs/memory/sessions/YYYY-MM-DD.md`
-- Completed task summary -> `docs/memory/sessions/YYYY-MM-DD.md` using `## COMPLETED: TASK_ID - summary`
+- Detailed implementation notes, debugging narrative, command output, or root cause -> per-member session log under `docs/memory/sessions/*`
+- Completed task summary -> per-member session log using `## COMPLETED: TASK_ID - summary`
 - Future work -> `docs/tasks/backlog.md`
 - Blocked or approval-gated work -> `docs/tasks/blocked.md`
 - Architecture/security/testing/UI/data/dependency behavior -> the matching reference doc
@@ -81,6 +83,12 @@ Before commit or handoff, run:
 
 ```bash
 npm run docs:refresh
+```
+
+For team workflows, run:
+
+```bash
+npm run team:guard
 ```
 
 For final adoption of this template into a real project, run:
@@ -107,7 +115,7 @@ Strict routing:
 
 - Strategy, focus, or durable constraint -> `docs/memory/current.md`
 - Open task and task status -> `docs/tasks/active.md`
-- Debugging narrative or root-cause analysis -> `docs/memory/sessions/YYYY-MM-DD.md`
+- Debugging narrative or root-cause analysis -> per-member session log
 - Completed task summary -> session `## COMPLETED:` marker; regenerated into `docs/tasks/completed.md`
 - Edge case as reusable structured row -> `docs/testing-edge-cases.md`
 - Edge case as story or incident -> session log, with a short reference if needed
@@ -145,10 +153,19 @@ Create an ADR before implementation when any apply:
 ## 8. Minimal Agent Workflow
 
 1. Classify user intent.
-2. Retrieve minimal relevant docs.
-3. Check ADR / approval / blocked constraints.
-4. Implement the smallest safe change.
-5. Run relevant tests/checks, with `npm run security:scan` for security-sensitive changes.
-6. Update docs via routing rules.
-7. Run `npm run docs:refresh`.
-8. Report changed file paths, validation results, and remaining risk.
+2. Confirm current team identity and task ownership.
+3. Retrieve minimal relevant docs.
+4. Check ADR / approval / blocked constraints.
+5. Implement the smallest safe change.
+6. Run relevant tests/checks, with `npm run security:scan` for security-sensitive changes.
+7. Update docs via routing rules.
+8. Run `npm run team:guard` and `npm run docs:refresh`.
+9. Report changed file paths, validation results, and remaining risk.
+
+## 9. Team Identity Rule
+
+- `docs/team/members.md` is a fake registry for coordination, not authentication.
+- `.context/identity.json` stores the local user identity and must not be committed.
+- Before starting task work, each contributor should run `npm run team:whoami -- <member-id>`.
+- Active tasks must include `Owner: <member-id>`, and the owner must exist in `docs/team/members.md`.
+- Do not take over another member's active task unless the user explicitly asks for reassignment or collaboration.

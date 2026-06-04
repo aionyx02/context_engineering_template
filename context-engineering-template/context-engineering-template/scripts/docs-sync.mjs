@@ -22,7 +22,7 @@ for (const r of mapRows.sort((a,b)=>a.file.localeCompare(b.file))) {
   documentMap += `| \`${r.file}\` | \`${r.type}\` | \`${r.status}\` | \`${r.context}\` | ${r.title.replace(/^ADR-\d+:\s*/, '')} |\n`;
 }
 
-documentMap += `\n## Automation Commands\n\n\`\`\`bash\nnpm run lint\nnpm run security:scan\nnpm test\nnpm run docs:ready\nnpm run docs:new-adr -- "Decision title"\nnpm run docs:new-session\nnpm run docs:sync\nnpm run docs:guard-size\nnpm run docs:guard-schema\nnpm run docs:guard-links\nnpm run docs:guard-secrets\nnpm run docs:guard-placeholders\nnpm run docs:guard-adr-status\nnpm run docs:guard-task-status\nnpm run docs:audit-frontmatter\nnpm run docs:narrative-check\nnpm run docs:completed-regen\nnpm run docs:refresh\n\`\`\`\n`;
+documentMap += `\n## Automation Commands\n\n\`\`\`bash\nnpm run lint\nnpm run security:scan\nnpm test\nnpm run team:register -- shawn "Shawn"\nnpm run team:whoami -- shawn\nnpm run team:status\nnpm run team:guard\nnpm run docs:ready\nnpm run docs:new-adr -- "Decision title"\nnpm run docs:new-session\nnpm run docs:sync\nnpm run docs:guard-size\nnpm run docs:guard-schema\nnpm run docs:guard-links\nnpm run docs:guard-secrets\nnpm run docs:guard-placeholders\nnpm run docs:guard-adr-status\nnpm run docs:guard-task-status\nnpm run docs:audit-frontmatter\nnpm run docs:narrative-check\nnpm run docs:completed-regen\nnpm run docs:refresh\n\`\`\`\n`;
 const indexChanged = writeIfChanged('docs/index.md', replaceSection(index, marker, documentMap));
 
 const decisionsBody = adrRows

@@ -47,7 +47,7 @@ owner: project
 
 ## Strategy
 
-Keep `active.md` compact. Put task-level details in dedicated `docs/tasks/*.md`, detailed implementation notes in `docs/memory/sessions/YYYY-MM-DD.md`, and future ideas in `docs/tasks/backlog.md`.
+Keep `active.md` compact. Every active task must include an `Owner` from `docs/team/members.md`. Use `project` only for placeholder or unassigned setup work; `doing` tasks should be assigned to a real member. Put task-level details in dedicated `docs/tasks/*.md`, detailed implementation notes in per-member session logs, and future ideas in `docs/tasks/backlog.md`.
 
 ## Next Phase Candidates
 

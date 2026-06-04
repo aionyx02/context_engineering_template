@@ -13,10 +13,13 @@ owner: project
 
 ## Session Start
 
-1. Read `docs/index.md` for documentation routing.
-2. Read `docs/memory/current.md` for current strategy, constraints, and next step.
-3. Read `docs/tasks/active.md` for the active queue.
-4. Retrieve additional documents by intent. For planning, implementation, refactor, or architecture work, read `docs/engineering-principles.md`. Do not recursively load all docs.
+1. Run `npm run team:status` when Node scripts are available.
+2. If no local identity is set, ask the human to run `npm run team:whoami -- <member-id>` before starting task work.
+3. Read `docs/team/members.md` for registered members.
+4. Read `docs/index.md` for documentation routing.
+5. Read `docs/memory/current.md` for current strategy, constraints, and next step.
+6. Read `docs/tasks/active.md` for the active queue and only work on tasks owned by the current identity unless explicitly reassigned.
+7. Retrieve additional documents by intent. For planning, implementation, refactor, or architecture work, read `docs/engineering-principles.md`. Do not recursively load all docs.
 
 ## Session Close
 
@@ -24,6 +27,7 @@ Before final response, handoff, or commit:
 
 1. Update only the smallest matching state document.
 2. Put detailed execution notes, debugging narrative, and command-output history in `docs/memory/sessions/YYYY-MM-DD.md`.
+   - For team workflows, use per-member session files created by `npm run docs:new-session`.
 3. Keep `docs/memory/current.md` and `docs/tasks/active.md` as current-state indexes only.
 4. Put completed-task detail in the session log using `## COMPLETED: TASK_ID - summary`.
 5. Run `npm run docs:refresh` when Node scripts are available.
@@ -59,6 +63,7 @@ npm install
 npm run lint
 npm run security:scan
 npm test
+npm run team:guard
 npm run docs:refresh
 npm run docs:ready
 ```
@@ -67,6 +72,7 @@ npm run docs:ready
 
 - `docs/index.md` - documentation router
 - `docs/project.md` - stable project facts
+- `docs/team/members.md` - fake team registry and task owner IDs
 - `docs/memory/current.md` - short working memory
 - `docs/tasks/active.md` - active work only
 - `docs/engineering-principles.md` - coding style, planning priorities, and decoupled architecture rules

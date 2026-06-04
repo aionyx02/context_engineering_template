@@ -140,3 +140,65 @@ test('docs-new-adr requires a title', t => {
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /Usage: npm run docs:new-adr/);
 });
+
+test('team-register and team-whoami set a local identity', t => {
+  const workspace = createWorkspace(t, {});
+
+  const register = runScript(workspace, 'team-register.mjs', ['shawn', 'Shawn', 'maintainer']);
+  assert.equal(register.status, 0, register.stderr || register.stdout);
+  assert.match(register.stdout, /registered shawn/);
+
+  const whoami = runScript(workspace, 'team-whoami.mjs', ['shawn']);
+  assert.equal(whoami.status, 0, whoami.stderr || whoami.stdout);
+  assert.match(whoami.stdout, /current identity: shawn/);
+
+  const members = readFile(workspace, 'docs/team/members.md');
+  const identity = JSON.parse(readFile(workspace, '.context/identity.json'));
+  assert.match(members, /\| `shawn` \| Shawn \| maintainer \| true \|/);
+  assert.equal(identity.member_id, 'shawn');
+});
+
+test('team-guard validates active task owners against registered members', t => {
+  const workspace = createWorkspace(t, {
+    'docs/team/members.md': `---\ntype: team_registry\nstatus: active\nupdated: 2026-06-04\ncontext_policy: retrieve_when_planning\nowner: project\n---\n\n# Team Members\n\n| ID | Display name | Role | Active | Notes |\n|---|---|---|---|---|\n| \`shawn\` | Shawn | maintainer | true | |\n`,
+    'docs/tasks/active.md': `---\ntype: task_index\nstatus: active\nupdated: 2026-06-04\ncontext_policy: always_retrievable\nowner: project\n---\n\n# Active Tasks\n\n## Active Queue\n\n### TASK.001 - Example\n\n- Status: doing\n- Owner: shawn\n`
+  });
+
+  const result = runScript(workspace, 'team-guard.mjs');
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.match(result.stdout, /team guard ok/);
+});
+
+test('team-guard fails when an active task owner is not registered', t => {
+  const workspace = createWorkspace(t, {
+    'docs/team/members.md': `---\ntype: team_registry\nstatus: active\nupdated: 2026-06-04\ncontext_policy: retrieve_when_planning\nowner: project\n---\n\n# Team Members\n\n| ID | Display name | Role | Active | Notes |\n|---|---|---|---|---|\n| \`shawn\` | Shawn | maintainer | true | |\n`,
+    'docs/tasks/active.md': `---\ntype: task_index\nstatus: active\nupdated: 2026-06-04\ncontext_policy: always_retrievable\nowner: project\n---\n\n# Active Tasks\n\n## Active Queue\n\n### TASK.001 - Example\n\n- Status: doing\n- Owner: alice\n`
+  });
+
+  const result = runScript(workspace, 'team-guard.mjs');
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /owner alice is not registered/);
+});
+
+test('docs-new-session requires identity and creates a member-specific session log', t => {
+  const workspace = createWorkspace(t, {
+    'docs/team/members.md': `---\ntype: team_registry\nstatus: active\nupdated: 2026-06-04\ncontext_policy: retrieve_when_planning\nowner: project\n---\n\n# Team Members\n\n| ID | Display name | Role | Active | Notes |\n|---|---|---|---|---|\n| \`shawn\` | Shawn | maintainer | true | |\n`,
+    'docs/memory/sessions/YYYY-MM-DD.md': `---\ntype: session_log\nstatus: archive\nupdated: YYYY-MM-DD\ncontext_policy: historical\nowner: project\n---\n\n# Session Log: YYYY-MM-DD\n`
+  });
+
+  const first = runScript(workspace, 'docs-new-session.mjs');
+  assert.notEqual(first.status, 0);
+  assert.match(first.stderr, /TEAM IDENTITY FAIL/);
+
+  const whoami = runScript(workspace, 'team-whoami.mjs', ['shawn']);
+  assert.equal(whoami.status, 0, whoami.stderr || whoami.stdout);
+
+  const second = runScript(workspace, 'docs-new-session.mjs');
+  assert.equal(second.status, 0, second.stderr || second.stdout);
+
+  const match = second.stdout.match(/created (docs\/memory\/sessions\/\d{4}-\d{2}-\d{2}-shawn\.md)/);
+  assert.ok(match, second.stdout);
+  const content = readFile(workspace, match[1]);
+  assert.match(content, /owner: shawn/);
+  assert.match(content, /# Session Log: \d{4}-\d{2}-\d{2} - Shawn/);
+});
