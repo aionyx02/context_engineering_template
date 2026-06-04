@@ -2,7 +2,7 @@
 type: agent_bootstrap
 status: active
 priority: p0
-updated: 2026-05-24
+updated: 2026-06-04
 context_policy: always_retrievable
 owner: project
 ---
@@ -16,7 +16,7 @@ owner: project
 1. Read `docs/index.md` for documentation routing.
 2. Read `docs/memory/current.md` for current strategy, constraints, and next step.
 3. Read `docs/tasks/active.md` for the active queue.
-4. Retrieve additional documents by intent. Do not recursively load all docs.
+4. Retrieve additional documents by intent. For planning, implementation, refactor, or architecture work, read `docs/engineering-principles.md`. Do not recursively load all docs.
 
 ## Session Close
 
@@ -57,9 +57,10 @@ Replace commands to match this project.
 ```bash
 npm install
 npm run lint
-npm run test
-npm run build
+npm run security:scan
+npm test
 npm run docs:refresh
+npm run docs:ready
 ```
 
 ## Documentation Entry Points
@@ -68,4 +69,5 @@ npm run docs:refresh
 - `docs/project.md` - stable project facts
 - `docs/memory/current.md` - short working memory
 - `docs/tasks/active.md` - active work only
+- `docs/engineering-principles.md` - coding style, planning priorities, and decoupled architecture rules
 - `docs/CLAUDE.md` - governance and ADR rules

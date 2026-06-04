@@ -2,7 +2,7 @@
 type: agent_policy
 status: active
 priority: p1
-updated: 2026-05-24
+updated: 2026-06-04
 context_policy: on_demand
 owner: project
 ---
@@ -15,10 +15,20 @@ Applies to project governance, ADR workflow, and documentation update behavior.
 
 Safety > correctness > rollbackability > testability > performance > speed.
 
+## 1.1 Planning Priority
+
+For planning, implementation, refactor, and architecture work, retrieve `docs/engineering-principles.md` and apply this order:
+
+1. Lower security risk first
+2. Improve memory and CPU efficiency second
+3. Keep architecture decoupled by default
+4. Optimize delivery speed after the first three
+
 ## 2. Retrieval-First Documentation Rule
 
 - Do not inject all docs into prompt at once.
 - Start from `docs/index.md`, then read `docs/memory/current.md` and `docs/tasks/active.md`.
+- For planning or implementation, also read `docs/engineering-principles.md`.
 - Retrieve additional files only by task intent.
 - Use the smallest relevant heading section.
 - Do not treat `docs/tasks/completed.md`, `docs/memory/sessions/*`, or `docs/memory/archive/*` as current instruction.
@@ -38,6 +48,7 @@ Safety > correctness > rollbackability > testability > performance > speed.
 ## 3. ADR Authority Rule
 
 - AI can create ADRs with status `proposed` only.
+- Create new ADR files with `npm run docs:new-adr -- "Decision title"` when Node scripts are available.
 - AI cannot mark ADRs as `accepted` unless the developer explicitly instructs it.
 - Implementation that changes architecture, security, public data contracts, or irreversible behavior should wait for developer acceptance.
 
@@ -70,6 +81,18 @@ Before commit or handoff, run:
 
 ```bash
 npm run docs:refresh
+```
+
+For final adoption of this template into a real project, run:
+
+```bash
+npm run docs:ready
+```
+
+When changes touch permissions, secrets, workflows, examples, or shell execution, also run:
+
+```bash
+npm run security:scan
 ```
 
 ## 6. Documentation Bloat Prevention
@@ -125,7 +148,7 @@ Create an ADR before implementation when any apply:
 2. Retrieve minimal relevant docs.
 3. Check ADR / approval / blocked constraints.
 4. Implement the smallest safe change.
-5. Run relevant tests/checks.
+5. Run relevant tests/checks, with `npm run security:scan` for security-sensitive changes.
 6. Update docs via routing rules.
 7. Run `npm run docs:refresh`.
 8. Report changed file paths, validation results, and remaining risk.

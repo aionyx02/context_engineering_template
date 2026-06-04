@@ -2,7 +2,7 @@
 type: docs_index
 status: active
 priority: p1
-updated: 2026-05-24
+updated: 2026-06-04
 context_policy: on_demand
 owner: project
 ---
@@ -33,24 +33,25 @@ Use this file as the first lookup step. The goal is retrieval-first context, not
 | Intent | Primary docs |
 |---|---|
 | What should I do now? | `docs/memory/current.md`, `docs/tasks/active.md`, `docs/tasks/blocked.md` |
-| Implementation | `docs/tasks/active.md`, related task plan, `docs/architecture.md`, `docs/conventions.md`, targeted code |
+| Planning / solution design | `docs/engineering-principles.md`, `docs/architecture.md`, `docs/security.md`, `docs/conventions.md` |
+| Implementation | `docs/tasks/active.md`, related task plan, `docs/engineering-principles.md`, `docs/architecture.md`, `docs/conventions.md`, targeted code |
 | Bug fix | `docs/testing.md`, `docs/testing-edge-cases.md`, `docs/conventions.md`, active task, related session log |
-| Refactor | `docs/conventions.md`, `docs/architecture.md`, active task |
-| Architecture decision | `docs/adr/*`, `docs/decisions.md`, `docs/architecture.md` |
-| Dependency change | `docs/dependencies.md`, `docs/adr/*`, `docs/security.md` if relevant |
+| Refactor | `docs/engineering-principles.md`, `docs/conventions.md`, `docs/architecture.md`, active task |
+| Architecture decision | `docs/engineering-principles.md`, `docs/adr/*`, `docs/decisions.md`, `docs/architecture.md` |
+| Dependency change | `docs/engineering-principles.md`, `docs/dependencies.md`, `docs/adr/*`, `docs/security.md` if relevant |
 | Data model / schema | `docs/data.md`, `docs/architecture.md`, related ADR |
 | API contract | `docs/data.md`, `docs/testing.md`, related ADR |
-| Security / permission | `docs/tasks/blocked.md`, `docs/security.md`, relevant ADR |
+| Security / permission | `docs/engineering-principles.md`, `docs/tasks/blocked.md`, `docs/security.md`, relevant ADR |
 | Testing / regression | `docs/testing.md`, `docs/testing-edge-cases.md`, active task |
 | UI implementation | `docs/ui.md`, `docs/design-system.md`, `docs/accessibility.md`, related ADR |
 | HTML structure | `docs/html-guidelines.md`, `docs/accessibility.md`, related task |
 | Design decision | `docs/design-system.md`, `docs/adr/*`, `docs/decisions.md` |
 | Accessibility / keyboard UX | `docs/accessibility.md`, `docs/testing.md` |
-| Performance | `docs/architecture.md`, `docs/testing.md`, related benchmark notes |
+| Performance | `docs/engineering-principles.md`, `docs/architecture.md`, `docs/testing.md`, related benchmark notes |
 | Release / deployment | `docs/release.md`, `docs/testing.md`, `docs/security.md` |
 | Historical question | `docs/tasks/completed.md`, `docs/memory/sessions/*`, `docs/memory/archive/*` |
 | Product scope | `docs/project.md`, `docs/memory/current.md`, roadmap/backlog |
-| Onboarding | `README.md`, `docs/project.md`, `docs/index.md` |
+| Onboarding | `README.md`, `docs/project.md`, `docs/engineering-principles.md`, `docs/index.md` |
 
 ## Context Budget Example
 
@@ -78,6 +79,7 @@ Use this file as the first lookup step. The goal is retrieval-first context, not
 | `docs/decisions.md` | `decision_index` | `active` | `retrieve_only` | Decision Index |
 | `docs/dependencies.md` | `dependency_policy` | `active` | `retrieve_when_planning` | Dependencies |
 | `docs/design-system.md` | `design_system` | `active` | `retrieve_when_planning` | Design System |
+| `docs/engineering-principles.md` | `engineering_policy` | `active` | `retrieve_when_planning` | Engineering Principles |
 | `docs/html-guidelines.md` | `html_guidelines` | `active` | `retrieve_when_planning` | HTML Guidelines |
 | `docs/index.md` | `docs_index` | `active` | `on_demand` | Documentation Index |
 | `docs/memory/current.md` | `working_memory` | `active` | `always_retrievable` | Current Project Memory |
@@ -97,11 +99,17 @@ Use this file as the first lookup step. The goal is retrieval-first context, not
 ## Automation Commands
 
 ```bash
+npm run lint
+npm run security:scan
+npm test
+npm run docs:ready
+npm run docs:new-adr -- "Decision title"
 npm run docs:new-session
 npm run docs:sync
 npm run docs:guard-size
 npm run docs:guard-schema
 npm run docs:guard-links
+npm run docs:guard-secrets
 npm run docs:guard-placeholders
 npm run docs:guard-adr-status
 npm run docs:guard-task-status

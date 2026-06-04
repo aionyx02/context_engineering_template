@@ -1,5 +1,4 @@
-import path from 'node:path';
-import { exists, read, walk } from './docs-utils.mjs';
+import { exists, read, toPosixPath, walk } from './docs-utils.mjs';
 
 const markdownFiles = walk('docs', f => f.endsWith('.md')).concat(['README.md', 'CLAUDE.md'].filter(exists));
 const linkPatterns = [
@@ -20,10 +19,10 @@ for (const file of markdownFiles) {
   for (const pattern of linkPatterns) {
     for (const m of content.matchAll(pattern)) {
       const target = m[1].trim().replace(/,$/, '');
-      if ([...ignored].some(i => target.includes('*') || i === target)) continue;
-      if (target.endsWith('/*')) continue;
-      if (!target.match(/\.(md|mjs|json|yml|yaml)$/)) continue;
-      const normalized = target.split('#')[0];
+      const normalized = toPosixPath(target.split('#')[0]);
+      if (normalized.includes('*') || ignored.has(normalized)) continue;
+      if (normalized.endsWith('/*')) continue;
+      if (!normalized.match(/\.(md|mjs|json|yml|yaml)$/)) continue;
       if (!exists(normalized)) {
         console.error(`LINK FAIL ${file}: ${normalized} does not exist`);
         failed = true;

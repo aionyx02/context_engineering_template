@@ -1,64 +1,75 @@
 # Extracted Workflow From Reference Project
 
-## 抽出的工作流骨架
+## 核心構件
 
-參考專案的 context engineering 不是單純的 prompt engineering，而是把 AI 可用上下文拆成多層文件：
+這個模板把 context engineering 拆成幾個明確角色，避免所有規則都塞進單一 prompt。
 
-| 層級 | 檔案 | 用途 |
+| 構件 | 檔案 | 作用 |
 |---|---|---|
-| Bootstrap | `CLAUDE.md` | 每次 session 的最小啟動規則 |
-| Governance | `docs/CLAUDE.md` | 文件路由、ADR、衝突處理、更新規則 |
-| Router | `docs/index.md` | 文件地圖與按意圖檢索規則 |
-| Stable facts | `docs/project.md` | 專案長期不常變資訊 |
-| Current state | `docs/memory/current.md` | 目前策略、焦點、限制、下一步 |
-| Task state | `docs/tasks/active.md` | 現在正在做什麼 |
-| Detailed task plan | `docs/tasks/*.md` | 較大的 task plan、done criteria、non-goals |
-| Decision records | `docs/adr/*.md` | 架構、安全、schema、依賴等決策 |
-| Historical log | `docs/memory/sessions/*.md` | 執行紀錄、debug narrative、命令輸出 |
-| Generated summaries | `docs/state/*.json` | 給 AI 快速讀取的壓縮狀態 |
-| Guard scripts | `scripts/docs-*.mjs` | 防止文件膨脹、前置資料錯誤、狀態不同步 |
+| Bootstrap | `CLAUDE.md` | 定義 session 啟動順序與最小規則 |
+| Governance | `docs/CLAUDE.md` | 定義文件路由、ADR 權限、同步規則 |
+| Router | `docs/index.md` | 讓 AI 按任務意圖讀最小必要文件 |
+| Engineering policy | `docs/engineering-principles.md` | 定義 Google-style coding、資安優先、效能與解耦原則 |
+| Stable facts | `docs/project.md` | 放產品背景、目標、平台與工程優先級 |
+| Current state | `docs/memory/current.md` | 放目前策略、約束、下一步 |
+| Task state | `docs/tasks/active.md` | 放 active queue 與任務狀態 |
+| Detailed task plan | `docs/tasks/*.md` | 放較大任務的 plan、acceptance criteria、validation |
+| Decision records | `docs/adr/*.md` | 放架構、安全、資料契約、依賴等重大決策 |
+| Historical log | `docs/memory/sessions/*.md` | 放 debug narrative、命令輸出、完成紀錄 |
+| Guard scripts | `scripts/docs-*.mjs` | 驗證 frontmatter、連結、size、secret、ADR 與任務格式 |
+| Generated summaries | `docs/state/*.json` / generated indexes | 提供輕量可檢索的摘要資訊 |
 
-## 關鍵設計模式
-
-### 1. Retrieval-first，不做 full-doc prompt dump
-
-AI 不應該一開始遞迴讀完 `docs/`。正確流程是：
+## 啟動流程
 
 ```text
-CLAUDE.md -> docs/index.md -> current.md + active.md -> task-specific docs
+CLAUDE.md
+  -> docs/index.md
+  -> docs/memory/current.md
+  -> docs/tasks/active.md
+  -> docs/engineering-principles.md (planning / implementation / refactor / architecture)
+  -> task-specific docs
 ```
 
-### 2. Current state 與 history 分離
+## 規劃優先順序
 
-`current.md` 和 `active.md` 只保存目前狀態。詳細敘事、debug 過程、命令輸出都進 session log。
+每次比較方案時，順序固定如下：
 
-### 3. ADR 是架構變更的門檻
+1. 先選資安風險較低的方案
+2. 再選記憶體與 CPU 成本更合理的方案
+3. 再看是否維持解耦與可替換邊界
+4. 最後才比較交付速度與實作便利性
 
-只要涉及核心依賴、資料格式、安全邊界、IPC/API contract、重大演算法，就先寫 ADR。AI 可以提出 `proposed` ADR，但不應自行標成 `accepted`。
+## 文件路由原則
 
-### 4. 文件衝突有優先序
+- `current.md` 和 `active.md` 只放現在狀態，不放歷史敘事。
+- session log 才放 debug narrative、指令輸出、root cause。
+- durable rule 寫進 reference docs，不要重複貼進 bootstrap 文件。
+- 需要重大決策時，用 `npm run docs:new-adr -- "Decision title"` 產生 `proposed` ADR，再等明確接受。
 
-建議優先序：
+## 自動檢查原則
 
-1. 使用者當前明確指令
-2. `docs/tasks/active.md`
-3. `docs/memory/current.md`
-4. accepted ADR
-5. `docs/security.md`
-6. `docs/architecture.md`
-7. sessions / archive
+模板內建的 guard scripts 會檢查：
 
-### 5. Guard scripts 是路由回饋
+- frontmatter schema
+- 文件大小上限
+- 連結存在性
+- secret / token / private key 洩漏
+- ADR 命名與狀態規則
+- task marker 與 narrative routing
+- generated doc 是否可穩定重建
 
-檢查失敗不只是格式錯誤，而是在提醒：這段內容可能放錯地方。例如把長篇 execution narrative 寫進 `current.md`，就會被 narrative check 擋下。
+CI 應該執行：
 
-## 通用化後的差異
+```bash
+npm run lint
+npm run security:scan
+npm test
+npm run docs:refresh
+git diff --exit-code
+```
 
-本模板移除了原專案的 Tauri / React / Rust 特定內容，保留：
+真實專案導入完成後，執行：
 
-- 文件拓撲
-- 啟動與收尾流程
-- ADR 規則
-- 狀態與歷史分流
-- 檢查 scripts
-- task / memory / decision summary 產生方式
+```bash
+npm run docs:ready
+```
